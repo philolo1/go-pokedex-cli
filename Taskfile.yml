@@ -4,3 +4,6 @@ tasks:
   run:
     cmds:
       - go run *.go 
+  test-cache:
+    cmds:
+      - go test cache.go cache_test.go
