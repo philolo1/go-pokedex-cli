@@ -5,3 +5,7 @@ GET https://{{hostname}}/{{path}}/location-area
 
 ## location area specific
 GET https://{{hostname}}/{{path}}/location-area/mt-coronet-5f
+
+
+## invalid request
+GET https://{{hostname}}/{{path}}/location-area/wrong

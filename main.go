@@ -13,10 +13,10 @@ import (
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(text *string) error
+	callback    func(params *[]string) error
 }
 
-func help(text *string) error {
+func help(params *[]string) error {
 	fmt.Println(`
 	Welcome to the Pokedex!
 	Usage:
@@ -27,7 +27,7 @@ func help(text *string) error {
 	return nil
 }
 
-func exit(text *string) error {
+func exit(params *[]string) error {
 	os.Exit(0)
 	return nil
 }
@@ -54,6 +54,11 @@ func createMap(mapInfo *api.MapInfo) map[string]cliCommand {
 			description: "Get previous map",
 			callback:    mapInfo.QueryBack,
 		},
+		"explore": {
+			name:        "explore region",
+			description: "explore region",
+			callback:    mapInfo.ExploreRegion,
+		},
 	}
 }
 
@@ -67,12 +72,16 @@ func main() {
 		fmt.Print("Pokedex >  ")
 		text, _ := reader.ReadString('\n')
 
-		text = strings.TrimSpace(text)
+		wordArr := strings.Fields(text)
+
+		text = wordArr[0]
+
+		param := wordArr[1:]
 
 		el, ok := cmdMap[text]
 
 		if ok {
-			err := el.callback(&text)
+			err := el.callback(&param)
 			if err != nil {
 				fmt.Printf("ERROR: %v\n", err)
 			}
