@@ -56,11 +56,7 @@ func createMap(mapInfo *MapInfo) map[string]cliCommand {
 }
 
 func main() {
-	url := "https://pokeapi.co/api/v2/location-area"
-	mapInfo := &MapInfo{
-		currentUrl:  &url,
-		previousUrl: nil,
-	}
+	mapInfo := NewMapInfo()
 
 	cmdMap := createMap(mapInfo)
 
@@ -74,7 +70,10 @@ func main() {
 		el, ok := cmdMap[text]
 
 		if ok {
-			el.callback()
+			err := el.callback()
+			if err != nil {
+				fmt.Printf("ERROR: %v\n", err)
+			}
 		} else {
 			fmt.Println("You entered:", text)
 		}
