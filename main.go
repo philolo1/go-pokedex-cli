@@ -64,6 +64,11 @@ func createMap(mapInfo *api.MapInfo) map[string]cliCommand {
 			description: "catch pokemon",
 			callback:    mapInfo.CatchPokemon,
 		},
+		"inspect": {
+			name:        "inspect pokemon in pokedex",
+			description: "inspect pokemon in pokedex",
+			callback:    mapInfo.InspectPokemon,
+		},
 	}
 }
 

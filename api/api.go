@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/philolo1/go-pokedex-cli/cache"
@@ -28,18 +29,7 @@ type PokemonInfo struct {
 		IsHidden bool `json:"is_hidden"`
 		Slot     int  `json:"slot"`
 	} `json:"abilities"`
-	BaseExperience int `json:"base_experience"`
-	Forms          []struct {
-		Name string `json:"name"`
-		URL  string `json:"url"`
-	} `json:"forms"`
-	GameIndices []struct {
-		GameIndex int `json:"game_index"`
-		Version   struct {
-			Name string `json:"name"`
-			URL  string `json:"url"`
-		} `json:"version"`
-	} `json:"game_indices"`
+	BaseExperience         int    `json:"base_experience"`
 	Height                 int    `json:"height"`
 	HeldItems              []any  `json:"held_items"`
 	ID                     int    `json:"id"`
@@ -85,6 +75,32 @@ type PokemonInfo struct {
 		} `json:"type"`
 	} `json:"types"`
 	Weight int `json:"weight"`
+}
+
+func (p PokemonInfo) String() string {
+
+	var statBuilder strings.Builder
+
+	for _, item := range p.Stats {
+		statBuilder.WriteString(fmt.Sprintf("  - %v: %v\n", item.Stat.Name, item.BaseStat))
+	}
+
+	var typesBuilder strings.Builder
+
+	for _, item := range p.Types {
+		typesBuilder.WriteString(fmt.Sprintf("  - %v\n", item.Type.Name))
+	}
+
+	return fmt.Sprintf(
+		`
+Name: %s
+Height: %v
+Weight: %v
+Stats: 
+%vTypes: 
+%v
+`, p.Name, p.Height, p.Weight, statBuilder.String(), typesBuilder.String())
+
 }
 
 type ExploreInfo struct {
@@ -269,6 +285,24 @@ func (m *MapInfo) CatchPokemon(params *[]string) error {
 	} else {
 		fmt.Printf("%v escaped!\n", pokemon)
 	}
+
+	return nil
+}
+
+func (m *MapInfo) InspectPokemon(params *[]string) error {
+	if len(*params) != 1 {
+		return errors.New("Exactly one parameter required")
+	}
+
+	pokemonName := (*params)[0]
+
+	pokemon, ok := m.pokedex[pokemonName]
+
+	if !ok {
+		return errors.New("you have not caught that pokemon")
+	}
+
+	fmt.Printf("%v", pokemon)
 
 	return nil
 }
