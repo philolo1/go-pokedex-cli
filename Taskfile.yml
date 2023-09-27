@@ -6,7 +6,7 @@ tasks:
       - go run main.go 
   test-cache:
     cmds:
-      - go test cache.go cache_test.go
+      - go test cache/*.go  
   fetch:
     cmds:
       - bun ./fetch.ts

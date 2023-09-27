@@ -21,45 +21,13 @@ type MapInfo struct {
 }
 
 type PokemonInfo struct {
-	Abilities []struct {
-		Ability struct {
-			Name string `json:"name"`
-			URL  string `json:"url"`
-		} `json:"ability"`
-		IsHidden bool `json:"is_hidden"`
-		Slot     int  `json:"slot"`
-	} `json:"abilities"`
 	BaseExperience         int    `json:"base_experience"`
 	Height                 int    `json:"height"`
-	HeldItems              []any  `json:"held_items"`
 	ID                     int    `json:"id"`
-	IsDefault              bool   `json:"is_default"`
 	LocationAreaEncounters string `json:"location_area_encounters"`
-	Moves                  []struct {
-		Move struct {
-			Name string `json:"name"`
-			URL  string `json:"url"`
-		} `json:"move"`
-		VersionGroupDetails []struct {
-			LevelLearnedAt  int `json:"level_learned_at"`
-			MoveLearnMethod struct {
-				Name string `json:"name"`
-				URL  string `json:"url"`
-			} `json:"move_learn_method"`
-			VersionGroup struct {
-				Name string `json:"name"`
-				URL  string `json:"url"`
-			} `json:"version_group"`
-		} `json:"version_group_details"`
-	} `json:"moves"`
-	Name      string `json:"name"`
-	Order     int    `json:"order"`
-	PastTypes []any  `json:"past_types"`
-	Species   struct {
-		Name string `json:"name"`
-		URL  string `json:"url"`
-	} `json:"species"`
-	Stats []struct {
+	Name                   string `json:"name"`
+	Order                  int    `json:"order"`
+	Stats                  []struct {
 		BaseStat int `json:"base_stat"`
 		Effort   int `json:"effort"`
 		Stat     struct {
@@ -303,6 +271,23 @@ func (m *MapInfo) InspectPokemon(params *[]string) error {
 	}
 
 	fmt.Printf("%v", pokemon)
+
+	return nil
+}
+
+func (m *MapInfo) ShowPokedex(params *[]string) error {
+	if len(*params) != 0 {
+		return errors.New("Pokedex does not expect a parameter")
+	}
+
+	if len(m.pokedex) == 0 {
+		fmt.Printf("Empty Pokedex!\n")
+	}
+
+	fmt.Printf("Your Pokedex:\n")
+	for _, item := range m.pokedex {
+		fmt.Printf("- %v\n", item.Name)
+	}
 
 	return nil
 }

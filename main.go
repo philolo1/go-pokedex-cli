@@ -20,9 +20,15 @@ func help(params *[]string) error {
 	fmt.Println(`
 	Welcome to the Pokedex!
 	Usage:
-
 	help: Displays a help message
-	exit: Exit the Pokedex`)
+	exit: Exit the Pokedex
+	map: Get next map
+	mapb: Get previous map
+	explore <region>: List pokemon in region
+	catch <pokemon>: Catch pokemon
+	inspect <pokemon>: Inspect pokemon in pokedex
+	pokedex: Show current pokedex
+	`)
 
 	return nil
 }
@@ -68,6 +74,11 @@ func createMap(mapInfo *api.MapInfo) map[string]cliCommand {
 			name:        "inspect pokemon in pokedex",
 			description: "inspect pokemon in pokedex",
 			callback:    mapInfo.InspectPokemon,
+		},
+		"pokedex": {
+			name:        "show current pokedex",
+			description: "show current pokedex",
+			callback:    mapInfo.ShowPokedex,
 		},
 	}
 }
