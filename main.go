@@ -56,8 +56,13 @@ func createMap(mapInfo *api.MapInfo) map[string]cliCommand {
 		},
 		"explore": {
 			name:        "explore region",
-			description: "explore region",
+			description: "list pokemon in region",
 			callback:    mapInfo.ExploreRegion,
+		},
+		"catch": {
+			name:        "catch pokemon",
+			description: "catch pokemon",
+			callback:    mapInfo.CatchPokemon,
 		},
 	}
 }

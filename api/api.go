@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math/rand"
 	"net/http"
 	"time"
 
@@ -15,6 +16,75 @@ type MapInfo struct {
 	previousUrl *string
 	currentUrl  *string
 	cache       Cache
+	pokedex     map[string]PokemonInfo
+}
+
+type PokemonInfo struct {
+	Abilities []struct {
+		Ability struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"ability"`
+		IsHidden bool `json:"is_hidden"`
+		Slot     int  `json:"slot"`
+	} `json:"abilities"`
+	BaseExperience int `json:"base_experience"`
+	Forms          []struct {
+		Name string `json:"name"`
+		URL  string `json:"url"`
+	} `json:"forms"`
+	GameIndices []struct {
+		GameIndex int `json:"game_index"`
+		Version   struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"version"`
+	} `json:"game_indices"`
+	Height                 int    `json:"height"`
+	HeldItems              []any  `json:"held_items"`
+	ID                     int    `json:"id"`
+	IsDefault              bool   `json:"is_default"`
+	LocationAreaEncounters string `json:"location_area_encounters"`
+	Moves                  []struct {
+		Move struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"move"`
+		VersionGroupDetails []struct {
+			LevelLearnedAt  int `json:"level_learned_at"`
+			MoveLearnMethod struct {
+				Name string `json:"name"`
+				URL  string `json:"url"`
+			} `json:"move_learn_method"`
+			VersionGroup struct {
+				Name string `json:"name"`
+				URL  string `json:"url"`
+			} `json:"version_group"`
+		} `json:"version_group_details"`
+	} `json:"moves"`
+	Name      string `json:"name"`
+	Order     int    `json:"order"`
+	PastTypes []any  `json:"past_types"`
+	Species   struct {
+		Name string `json:"name"`
+		URL  string `json:"url"`
+	} `json:"species"`
+	Stats []struct {
+		BaseStat int `json:"base_stat"`
+		Effort   int `json:"effort"`
+		Stat     struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"stat"`
+	} `json:"stats"`
+	Types []struct {
+		Slot int `json:"slot"`
+		Type struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"type"`
+	} `json:"types"`
+	Weight int `json:"weight"`
 }
 
 type ExploreInfo struct {
@@ -33,6 +103,7 @@ func NewMapInfo() *MapInfo {
 		currentUrl:  &url,
 		previousUrl: nil,
 		cache:       cache.NewCache(duration),
+		pokedex:     make(map[string]PokemonInfo),
 	}
 }
 
@@ -158,6 +229,45 @@ func (m *MapInfo) ExploreRegion(params *[]string) error {
 	fmt.Printf("Found Pokemon:\n")
 	for _, pokemon := range result.PokemonEncounters {
 		fmt.Println("- " + pokemon.Pokemon.Name)
+	}
+
+	return nil
+}
+
+func hasCaught(prob int, exp int) bool {
+	if exp > 100 {
+		return prob > 5
+	} else {
+		return prob > 2
+	}
+}
+
+func (m *MapInfo) CatchPokemon(params *[]string) error {
+	if len(*params) != 1 {
+		return errors.New("Exactly one parameter required")
+	}
+
+	pokemon := (*params)[0]
+
+	url := fmt.Sprintf("https://pokeapi.co/api/v2/pokemon/%s", pokemon)
+
+	result, err := getResponse[PokemonInfo](url, &m.cache)
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Throwing a Pokeball at %v...\n", pokemon)
+
+	exp := result.BaseExperience
+
+	prob := rand.Intn(10) + 1
+
+	if hasCaught(prob, exp) {
+		fmt.Printf("%v was caught!\n", pokemon)
+		m.pokedex[pokemon] = result
+	} else {
+		fmt.Printf("%v escaped!\n", pokemon)
 	}
 
 	return nil
