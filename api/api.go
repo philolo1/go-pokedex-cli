@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"encoding/json"
@@ -7,6 +7,9 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/philolo1/go-pokedex-cli/cache"
+	. "github.com/philolo1/go-pokedex-cli/cache"
 )
 
 type MapInfo struct {
@@ -21,7 +24,7 @@ func NewMapInfo() *MapInfo {
 	return &MapInfo{
 		currentUrl:  &url,
 		previousUrl: nil,
-		cache:       NewCache(duration),
+		cache:       cache.NewCache(duration),
 	}
 }
 
@@ -81,7 +84,7 @@ func getResponse(url string, cache *Cache) Response {
 	return result
 }
 
-func (m *MapInfo) query() error {
+func (m *MapInfo) Query(text *string) error {
 
 	if m.currentUrl == nil || len(*m.currentUrl) == 0 {
 		return errors.New("No next url")
@@ -98,7 +101,7 @@ func (m *MapInfo) query() error {
 	return nil
 }
 
-func (m *MapInfo) queryBack() error {
+func (m *MapInfo) QueryBack(text *string) error {
 	if m.previousUrl == nil || len(*m.previousUrl) == 0 {
 		return errors.New("No previous url")
 	}

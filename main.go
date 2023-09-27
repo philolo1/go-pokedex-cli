@@ -5,16 +5,18 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/philolo1/go-pokedex-cli/api"
 )
 
 // hint that is not used yet
 type cliCommand struct {
 	name        string
 	description string
-	callback    func() error
+	callback    func(text *string) error
 }
 
-func help() error {
+func help(text *string) error {
 	fmt.Println(`
 	Welcome to the Pokedex!
 	Usage:
@@ -25,12 +27,12 @@ func help() error {
 	return nil
 }
 
-func exit() error {
+func exit(text *string) error {
 	os.Exit(0)
 	return nil
 }
 
-func createMap(mapInfo *MapInfo) map[string]cliCommand {
+func createMap(mapInfo *api.MapInfo) map[string]cliCommand {
 	return map[string]cliCommand{
 		"help": {
 			name:        "help",
@@ -45,18 +47,18 @@ func createMap(mapInfo *MapInfo) map[string]cliCommand {
 		"map": {
 			name:        "next map",
 			description: "Get next map",
-			callback:    mapInfo.query,
+			callback:    mapInfo.Query,
 		},
 		"mapb": {
 			name:        "previous map",
 			description: "Get previous map",
-			callback:    mapInfo.queryBack,
+			callback:    mapInfo.QueryBack,
 		},
 	}
 }
 
 func main() {
-	mapInfo := NewMapInfo()
+	mapInfo := api.NewMapInfo()
 
 	cmdMap := createMap(mapInfo)
 
@@ -70,7 +72,7 @@ func main() {
 		el, ok := cmdMap[text]
 
 		if ok {
-			err := el.callback()
+			err := el.callback(&text)
 			if err != nil {
 				fmt.Printf("ERROR: %v\n", err)
 			}

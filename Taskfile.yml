@@ -3,7 +3,7 @@ version: '3'
 tasks:
   run:
     cmds:
-      - go run main.go api.go cache.go
+      - go run main.go 
   test-cache:
     cmds:
       - go test cache.go cache_test.go

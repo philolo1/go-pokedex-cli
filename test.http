@@ -1,0 +1,7 @@
+@hostname=pokeapi.co
+@path=api/v2
+## location area
+GET https://{{hostname}}/{{path}}/location-area
+
+## location area specific
+GET https://{{hostname}}/{{path}}/location-area/mt-coronet-5f
